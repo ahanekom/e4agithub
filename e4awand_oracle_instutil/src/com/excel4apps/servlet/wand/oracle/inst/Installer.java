@@ -43,8 +43,9 @@ public class Installer
      * Displays help information for Installer tool
      * 
      * Options: -d, --debug - Set the java logging framework LEVEL to ALL. <br>
-     * Mode: MODE_DB_AND_APPS_TIER - Performs complete installation of database
-     * and application tier artifacts. <br>
+     * Mode: <br>
+     * MODE_DB_AND_APPS_TIER - Performs complete installation of database and
+     * application tier artifacts. <br>
      * APPS_TIER - Only installs the application tier components.
      */
     private static void argsHelp()
