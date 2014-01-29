@@ -80,7 +80,6 @@ public class DeployFiles extends Installer
             {
                 mayorReleaseZipFile = new File(InstConstants.APPS_12_ZIP_FILE);
                 extractToFolder = new File("." + File.separator + InstConstants.APPS_VERSION_12);
-
             }
             else
             {

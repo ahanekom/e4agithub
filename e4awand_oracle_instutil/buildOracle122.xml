@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<project name="Ant-Test" default="main" basedir=".">
+	<!-- Sets variables which can later be used. -->
+	<!-- The value of a property is accessed via ${} -->
+	<property name="src.dir" location="src" />
+	<property name="build.dir" location="bin" />
+	<property name="dist.dir" location="dist" />
+	<property name="docs.dir" location="docs" />
+	<property name="lib.dir" location="lib" />
+	<property name="dist.lib.dir" location="${dist.dir}/lib" />
+	<property name="scripts.dir" location="scripts" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="instzip.dir" location="C:\temp\test\build\glwand5.5.0" />
+	<property name="template.instzip.dir" location="C:\temp\test\build\glwand5.5.0.template" />
+	<property name="instzip.file" location="C:\temp\test\build\glwand5.5.0.zip" />
+	<property name="jdbc.jar" value="jdbc14.zip" />
+	<property name="xml.jar" value="XMLImporter.zip" />
+
+	<!-- Set the classpath-->
+	<path id="e4awand_oracle_applet.classpath">
+		<pathelement location="${lib.dir}/${jdbc.jar}" />
+		<pathelement location="${lib.dir}/${xml.jar}" />
+	</path>
+
+	<!-- Deletes the existing build, docs and dist directory-->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${docs.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<!-- Creates the  build, docs and dist directory-->
+	<target name="makedir">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${docs.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${dist.lib.dir}" />
+	</target>
+
+	<!-- Compiles the java code (including the usage of library for JUnit -->
+	<target name="compile" depends="clean, makedir">
+		<javac debug="true" source="1.4" target="1.4" debuglevel="${debuglevel}" srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+			<classpath refid="e4awand_oracle_applet.classpath" />
+		</javac>
+
+	</target>
+
+	<!-- Creates Javadoc -->
+	<target name="docs" depends="compile">
+		<javadoc packagenames="src" sourcepath="${src.dir}" destdir="${docs.dir}">
+			<!-- Define which files / directory should get included, we include all -->
+			<fileset dir="${src.dir}">
+				<include name="**" />
+			</fileset>
+		</javadoc>
+	</target>
+
+	<!--Creates the deployable jar file  -->
+	<target name="jar" depends="compile">
+		<jar destfile="${dist.lib.dir}/e4aorainst.jar" basedir="${build.dir}">
+
+			<!-- <fileset dir="${lib.dir}" includes="**/*.zip"/> -->
+			<manifest>
+				<attribute name="Main-Class" value="Installer.install" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- Copy library files to distribution folder-->
+	<target name="libs">
+		<copy file="${scripts.dir}/install.sh" tofile="${dist.dir}/install.sh" overwrite="true" />
+		<copy file="${scripts.dir}/README.txt" tofile="${dist.dir}/README.txt" overwrite="true" />
+	</target>
+
+	<!-- Builds Dist Zip File -->
+	<target name="buildZip">
+
+		<delete dir="${instzip.dir}" />
+		<mkdir dir="${instzip.dir}" />
+
+		<copy todir="${instzip.dir}">
+			<fileset dir="${template.instzip.dir}" includes="**" />
+		</copy>
+
+		<copy todir="${instzip.dir}">
+			<fileset dir="${dist.dir}" includes="**" />
+		</copy>
+
+		<delete file="${instzip.file}.zip" />
+
+		<zip destfile="${instzip.file}" basedir="${instzip.dir}" />
+
+	</target>
+
+	<target name="sftp_oracle122" description="upload zip file to server">
+		<scp todir="applmgr:GL1oned23@oracle122.excel4apps.com:/home/applmgr/inst" sftp="true" trust="true" verbose="true" port="2205">
+			<fileset file="${instzip.file}" />
+		</scp>
+		<sshexec host="oracle12.excel4apps.com" username="applmgr" password="GL1oned23" trust="true" verbose="true" port="2205" command="cd inst; unzip -o /home/applmgr/inst/glwand5.5.0.zip; chmod 755 /home/applmgr/inst/install.sh; rm /home/applmgr/inst/*.log" />
+	</target>
+
+	<target name="main" depends="compile, jar, docs, libs, buildZip, sftp_oracle122">
+		<description>Main target</description>
+	</target>
+
+</project>

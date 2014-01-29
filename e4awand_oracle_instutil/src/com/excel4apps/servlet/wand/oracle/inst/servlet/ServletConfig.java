@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 
-import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
 import com.excel4apps.servlet.wand.oracle.inst.context.InstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
@@ -19,9 +18,40 @@ import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException
  * @author Andries Hanekom
  * 
  */
-public class ServletConfig extends Installer
+abstract class ServletConfig extends Installer
 {
-    public static void copyFiles(String source, String destination) throws IOException
+    protected File templateFile;
+    protected File customFile;
+
+    public void configure(InstContext ic, String servletFile) throws ServletConfigException
+    {
+        String fndTop = ic.getOac().getFndTop();
+        String templateTop;
+
+        templateTop = fndTop + File.separator + "admin" + File.separator + "template";
+
+        String templateFileString = templateTop + File.separator + servletFile;
+        String customFileString = templateTop + File.separator + "custom" + File.separator + servletFile;
+
+        customFile = new File(customFileString);
+        templateFile = new File(templateFileString);
+
+        if (customFile.exists())
+        {
+            modifyCustomFile(customFile);
+        }
+        else
+        {
+            createCustomFile(customFile, templateFile);
+
+            if (customFile.exists())
+            {
+                modifyCustomFile(customFile);
+            }
+        }
+    }
+
+    public void copyFiles(String source, String destination) throws IOException
     {
         logger.finer("Copy file " + source + " to " + destination);
         InputStream in = new FileInputStream(source);
@@ -36,7 +66,7 @@ public class ServletConfig extends Installer
         out.close();
     }
 
-    public static boolean createCustomFile(File customFile, File templateFile) throws ServletConfigException
+    public boolean createCustomFile(File customFile, File templateFile) throws ServletConfigException
     {
         logger.finer("Custom File: " + customFile.getPath());
         logger.finer("Template File: " + templateFile.getPath());
@@ -70,31 +100,16 @@ public class ServletConfig extends Installer
         return true;
     }
 
-    public static boolean customFilExists(File customFile)
+    public boolean customFilExists(File customFile)
     {
         return (customFile.exists());
     }
 
-    public static boolean customFolderExists(File customFolder)
+    public boolean customFolderExists(File customFolder)
     {
         return (customFolder.exists());
     }
 
-    /**
-     * Perform servlet config based on Application Version
-     * 
-     * @param ic
-     * @throws ServletConfigException
-     */
-    public static void setup(InstContext ic) throws ServletConfigException
-    {
-        if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_11))
-        {
-            ServletConfigR11.configure(ic);
-        }
-        else
-        {
-            ServletConfigR12.configure(ic);
-        }
-    }
+    protected abstract void modifyCustomFile(File customFile) throws ServletConfigException;
+
 }

@@ -22,7 +22,9 @@ import com.excel4apps.servlet.wand.oracle.inst.exceptions.LoadOAFPagesException;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
 import com.excel4apps.servlet.wand.oracle.inst.files.DeployFiles;
 import com.excel4apps.servlet.wand.oracle.inst.oaf.LoadOAFPages;
-import com.excel4apps.servlet.wand.oracle.inst.servlet.ServletConfig;
+import com.excel4apps.servlet.wand.oracle.inst.servlet.ServletConfigR11;
+import com.excel4apps.servlet.wand.oracle.inst.servlet.ServletConfigR12;
+import com.excel4apps.servlet.wand.oracle.inst.servlet.ServletConfigR122;
 
 /**
  * Excel4apps Wands Installation Tool
@@ -37,6 +39,7 @@ public class Installer
     public static String logFileName;
     private static Handler logFileHandler;
     protected static Properties arguments;
+
     private InstContext ic;
 
     /**
@@ -238,13 +241,16 @@ public class Installer
             SetupInstContext inst = new SetupInstContext();
             ic = inst.setup();
 
-            /* Deploy Artifacts */
-            DeployFiles.deploy(ic);
-            logC("Files Deployed Successfully\n");
-
             /* Configure Servlet */
-            ServletConfig.setup(ic);
+
+            setupServlet();
             logC("Servlet Configured Successfully\n");
+
+            /* Deploy Artifacts */
+
+            DeployFiles.deploy(ic);
+
+            logC("Files Deployed Successfully\n");
 
             /*
              * Only load OAF pages and APPS Configuration if performing DB and
@@ -253,14 +259,17 @@ public class Installer
             if (arguments.getProperty(InstConstants.KEY_INSTALLER_MODE).equals(InstConstants.MODE_DB_AND_APPS_TIER))
             {
                 /* Install OAF Pages */
+
                 LoadOAFPages lp = new LoadOAFPages();
                 lp.load(ic);
+
                 logC("OAF Pages Loaded Successfully\n");
 
                 /* Load APPS Configuration */
                 LoadAppsConfig.config(ic);
                 logC("APPS Components Created Successfully\n");
             }
+
         }
         catch (InstContextException ex)
         {
@@ -355,4 +364,39 @@ public class Installer
             }
         }
     }
+
+    /**
+     * Perform servlet config based on Application Version
+     * 
+     * @param ic
+     * @throws ServletConfigException
+     */
+    public void setupServlet() throws ServletConfigException
+    {
+
+        if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_11))
+        {
+            ServletConfigR11 servletConfigR11 = new ServletConfigR11();
+            servletConfigR11.configure(ic, InstConstants.APPS_11_SERVLET_FILE);
+        }
+        else if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_12))
+        {
+            ServletConfigR12 servletConfigR12 = new ServletConfigR12();
+            servletConfigR12.configure(ic, InstConstants.APPS_12_SERVLET_FILE);
+        }
+        else if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_12_2))
+        {
+            ServletConfigR122 servletConfigR122 = new ServletConfigR122();
+            servletConfigR122.configure(ic, InstConstants.APPS_122_SERVLET_FILE);
+            servletConfigR122.applyWorkaround();
+        }
+        else
+        {
+
+            throw new ServletConfigException(
+                    "Unable to determine Oracle EBS Application version for web.xml Servlet  Configuration");
+        }
+
+    }
+
 }

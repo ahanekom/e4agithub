@@ -263,6 +263,8 @@ public class SetupInstContext extends Installer
         getOAContext();
         setupAppsMajorVersion();
 
+        validateR122FileEdition();
+
         if (arguments.getProperty(InstConstants.KEY_INSTALLER_MODE).equals(InstConstants.MODE_DB_AND_APPS_TIER))
         {
             getInstCredentials();
@@ -276,6 +278,15 @@ public class SetupInstContext extends Installer
     private void setupAppsMajorVersion()
     {
         String appsMayorVersion = ic.getOac().getAppsVersion().substring(0, 2);
+
+        if (appsMayorVersion.equals("12"))
+        {
+            logger.finer(ic.getOac().getAppsVersion().substring(3, 4));
+            if (ic.getOac().getAppsVersion().substring(3, 4).equals("2"))
+            {
+                appsMayorVersion = "12.2";
+            }
+        }
 
         ic.setAppsMayorVersion(appsMayorVersion);
         logger.finer("appsMayorVersion=" + appsMayorVersion);
@@ -313,5 +324,13 @@ public class SetupInstContext extends Installer
         logC("Database Connection Details used for this installation: " + ic.getOac().getDBHost() + ":"
                 + ic.getOac().getDBPort() + ":" + ic.getOac().getDBSid());
         logC("");
+    }
+
+    private void validateR122FileEdition() throws InstContextException
+    {
+        if (!ic.getOac().getFileEditionType().equals(InstConstants.FILE_EDITION_TYPE_PATCH))
+        {
+            throw new InstContextException("You must be connected to the Patch Edition File System.");
+        }
     }
 }

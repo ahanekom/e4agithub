@@ -102,9 +102,13 @@ public class LoadOAFPages extends Installer
                 logger.finer("OAF Page=" + pages[i]);
 
                 if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_11))
+                {
                     appsMds = InstConstants.APPS_11_MDS;
+                }
                 else
+                {
                     appsMds = InstConstants.APPS_12_MDS;
+                }
 
                 page = ic.getOac().getApplTop() + File.separator + appsMds + File.separator + "webui" + File.separator
                         + pages[i];
@@ -132,12 +136,13 @@ public class LoadOAFPages extends Installer
         }
     }
 
-    
     /**
      * Performs call to {@link XMLImporter}
      * 
-     * @param ic Installation Context
-     * @param page Page to be loaded
+     * @param ic
+     *            Installation Context
+     * @param page
+     *            Page to be loaded
      * @throws LoadOAFPagesException
      */
     private void loadFile(InstContext ic, String page) throws LoadOAFPagesException

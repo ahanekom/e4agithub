@@ -126,5 +126,6 @@ public class LoadAppsConfig extends Installer
                 }
             }
         }
+
     }
 }

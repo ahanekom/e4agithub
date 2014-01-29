@@ -30,6 +30,7 @@ public class OAContextParser
      */
     public class OAContext
     {
+
         public String appsVersion;
         public String applTop;
         public String javaTop;
@@ -37,11 +38,15 @@ public class OAContextParser
 
         public String dbcFileName;
 
+        public String fileEditionName;
+
         public String dbhost;
 
         public String dbsid;
 
         public String dbport;
+
+        public String fileEditionType;
 
         public String getApplTop()
         {
@@ -71,6 +76,16 @@ public class OAContextParser
         public String getDBSid()
         {
             return dbsid;
+        }
+
+        public String getFileEditionName()
+        {
+            return fileEditionName;
+        }
+
+        public String getFileEditionType()
+        {
+            return fileEditionType;
         }
 
         public String getFndTop()
@@ -111,6 +126,16 @@ public class OAContextParser
         public void setDBSid(String value)
         {
             dbsid = value;
+        }
+
+        public void setFileEditionName(String fileEditionName)
+        {
+            this.fileEditionName = fileEditionName;
+        }
+
+        public void setFileEditionType(String fileEditionType)
+        {
+            this.fileEditionType = fileEditionType;
         }
 
         public void setFndTop(String fndTop)
@@ -187,6 +212,18 @@ public class OAContextParser
             {
                 oaContext.setFndTop(content);
                 logger.finer("fnd_top=" + oaContext.getFndTop());
+            }
+
+            if (qName.equalsIgnoreCase("file_edition_type"))
+            {
+                oaContext.setFileEditionType(content);
+                logger.finer("file_edition_type=" + oaContext.getFileEditionType());
+            }
+
+            if (qName.equalsIgnoreCase("file_edition_name"))
+            {
+                oaContext.setFileEditionName(content);
+                logger.finer("file_edition_name=" + oaContext.getFileEditionName());
             }
         }
 
