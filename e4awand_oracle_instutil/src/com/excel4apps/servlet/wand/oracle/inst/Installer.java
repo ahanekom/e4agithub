@@ -36,8 +36,8 @@ public class Installer
     public static final Logger logger = Logger.getLogger(Installer.class.getName());
     public static String logFileName;
     private static Handler logFileHandler;
-    private InstContext ic;
     protected static Properties arguments;
+    private InstContext ic;
 
     /**
      * Displays help information for Installer tool
