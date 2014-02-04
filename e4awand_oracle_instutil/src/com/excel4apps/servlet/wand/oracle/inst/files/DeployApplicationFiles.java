@@ -16,7 +16,7 @@ import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
  * @author Andries Hanekom
  * 
  */
-public class DeployFiles extends Installer
+public class DeployApplicationFiles extends Installer
 {
     private static boolean cleanUp(File directory)
     {
@@ -101,7 +101,7 @@ public class DeployFiles extends Installer
         catch (IOException ex)
         {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
-            throw new FileDeployException("Unable to deploy files");
+            throw new FileDeployException("Unable to deploy Application Files");
         }
     }
 

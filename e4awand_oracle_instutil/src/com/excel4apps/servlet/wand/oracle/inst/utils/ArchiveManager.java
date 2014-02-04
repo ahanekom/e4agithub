@@ -6,8 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -20,9 +20,24 @@ import com.excel4apps.servlet.wand.oracle.inst.Installer;
  * @author Andries Hanekom
  * 
  */
-public class ArchiveManager
+public class ArchiveManager extends Installer
 {
-    public static final Logger logger = Logger.getLogger(Installer.class.getName());
+    //public static final Logger logger = Logger.getLogger(Installer.class.getName());
+
+    public static void copyFiles(String source, String destination) throws IOException
+    {
+        logger.finer("Copy file " + source + " to " + destination);
+        InputStream in = new FileInputStream(source);
+        OutputStream out = new FileOutputStream(destination);
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0)
+        {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
+    }
 
     public static final void unzip(File zip, File extractTo) throws IOException
     {

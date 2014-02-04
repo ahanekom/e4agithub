@@ -17,14 +17,19 @@ import com.excel4apps.servlet.wand.oracle.inst.context.SetupInstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ArgumentsException;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.FileDeployException;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.InstContextException;
+import com.excel4apps.servlet.wand.oracle.inst.exceptions.InstallValidationException;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.LoadAppsConfigException;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.LoadOAFPagesException;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
-import com.excel4apps.servlet.wand.oracle.inst.files.DeployFiles;
+import com.excel4apps.servlet.wand.oracle.inst.exceptions.UpdateAdopSyncFileException;
+import com.excel4apps.servlet.wand.oracle.inst.files.DeployAdSpliceFiles;
+import com.excel4apps.servlet.wand.oracle.inst.files.DeployApplicationFiles;
+import com.excel4apps.servlet.wand.oracle.inst.files.UpdateAdopSyncFile;
 import com.excel4apps.servlet.wand.oracle.inst.oaf.LoadOAFPages;
 import com.excel4apps.servlet.wand.oracle.inst.servlet.ServletConfigR11;
 import com.excel4apps.servlet.wand.oracle.inst.servlet.ServletConfigR12;
 import com.excel4apps.servlet.wand.oracle.inst.servlet.ServletConfigR122;
+import com.excel4apps.servlet.wand.oracle.inst.utils.InstallValidation;
 
 /**
  * Excel4apps Wands Installation Tool
@@ -40,7 +45,7 @@ public class Installer
     private static Handler logFileHandler;
     protected static Properties arguments;
 
-    private InstContext ic;
+    protected static InstContext ic;
 
     /**
      * Displays help information for Installer tool
@@ -66,7 +71,9 @@ public class Installer
         System.out.println("  -d, --debug   Debug mode on");
         System.out.println("");
         System.out.println("Mode: (Optional)");
-        System.out.println("  APPS_TIER   Installs only the APPS tier components for GL Wand");
+        System.out.println("  APPS_TIER                 Installs only the APPS tier components for GL Wand");
+        System.out
+                .println("  DEPLOY_ADSPLICE_FILES     Deploy required config files for ADSPLICE utlity to $APPL_TOP/admin folder");
         System.out.println("");
     }
 
@@ -121,7 +128,7 @@ public class Installer
             System.exit(1);
         }
 
-        logC("Installer Mode: " + arguments.getProperty(InstConstants.KEY_INSTALLER_MODE) + "\n");
+        logC("Installer Mode: " + arguments.getProperty(InstConstants.INSTALLER_MODE_KEY) + "\n");
         logC("E4A GL Wand Installer Started\n");
 
         /* Perform Installation */
@@ -226,6 +233,77 @@ public class Installer
         return InstConstants.LOG_FILE + "_" + fileName + ".log";
     }
 
+    protected void appsAndDBTierInstall() throws InstContextException, ServletConfigException, FileDeployException,
+            LoadOAFPagesException, LoadAppsConfigException, InstallValidationException, UpdateAdopSyncFileException
+    {
+        /* Setup Installation Context */
+        SetupInstContext inst = new SetupInstContext();
+        ic = inst.setup(true);
+
+        /* Validate Installation Environment */
+        InstallValidation.validate(true);
+
+        /* Configure Servlet */
+        setupServlet();
+        logC("Servlet Configured Successfully\n");
+
+        /* Deploy Artifacts */
+        DeployApplicationFiles.deploy(ic);
+        logC("Files Deployed Successfully\n");
+
+        /* Install OAF Pages */
+        LoadOAFPages lp = new LoadOAFPages();
+        lp.load(ic);
+        logC("OAF Pages Loaded Successfully\n");
+
+        /* Load APPS Configuration */
+        LoadAppsConfig.config(ic);
+        logC("APPS Components Created Successfully\n");
+
+        if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
+        {
+            UpdateAdopSyncFile.update();
+            logC("ADOP Custom Synchronization Driver File Updated Successfully\n");
+        }
+    }
+
+    protected void appsTierInstall() throws InstContextException, ServletConfigException, FileDeployException,
+            InstallValidationException, UpdateAdopSyncFileException
+    {
+        /* Setup Installation Context */
+        SetupInstContext inst = new SetupInstContext();
+        ic = inst.setup(false);
+
+        /* Validate Installation Environment */
+        InstallValidation.validate(false);
+
+        /* Configure Servlet */
+        setupServlet();
+        logC("Servlet Configured Successfully\n");
+
+        /* Deploy Artifacts */
+        DeployApplicationFiles.deploy(ic);
+        logC("Files Deployed Successfully\n");
+
+        if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
+        {
+            UpdateAdopSyncFile.update();
+            logC("ADOP Custom Synchronization Driver File Updated Successfully\n");
+        }
+    }
+
+    private void deployAdSpliceFiles() throws InstContextException, FileDeployException
+    {
+        /* Setup Installation Context */
+        SetupInstContext inst = new SetupInstContext();
+        ic = inst.setup(true);
+
+        /* Validate Installation Environment */
+
+        DeployAdSpliceFiles.deploy();
+        logC("ADSPLICE Files Deployed Successfully\n");
+    }
+
     /**
      * Main installation method
      * 
@@ -237,41 +315,32 @@ public class Installer
     {
         try
         {
-            /* Setup Installation Context */
-            SetupInstContext inst = new SetupInstContext();
-            ic = inst.setup();
-
-            /* Configure Servlet */
-
-            setupServlet();
-            logC("Servlet Configured Successfully\n");
-
-            /* Deploy Artifacts */
-
-            DeployFiles.deploy(ic);
-
-            logC("Files Deployed Successfully\n");
-
-            /*
-             * Only load OAF pages and APPS Configuration if performing DB and
-             * APPS tier installation.
-             */
-            if (arguments.getProperty(InstConstants.KEY_INSTALLER_MODE).equals(InstConstants.MODE_DB_AND_APPS_TIER))
+            if (arguments.getProperty(InstConstants.INSTALLER_MODE_KEY).equals(
+                    InstConstants.INSTALLER_MODE_DB_AND_APPS_TIER))
             {
-                /* Install OAF Pages */
+                appsAndDBTierInstall();
+            }
+            else if (arguments.getProperty(InstConstants.INSTALLER_MODE_KEY).equals(
+                    InstConstants.INSTALLER_MODE_APPS_TIER))
+            {
+                appsTierInstall();
+            }
 
-                LoadOAFPages lp = new LoadOAFPages();
-                lp.load(ic);
-
-                logC("OAF Pages Loaded Successfully\n");
-
-                /* Load APPS Configuration */
-                LoadAppsConfig.config(ic);
-                logC("APPS Components Created Successfully\n");
+            else if (arguments.getProperty(InstConstants.INSTALLER_MODE_KEY).equals(
+                    InstConstants.INSTALLER_MODE_DEPLOY_ADSPLICE_FILES))
+            {
+                deployAdSpliceFiles();
             }
 
         }
         catch (InstContextException ex)
+        {
+            logC(ex.getMessage() + "\n");
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            return 1;
+        }
+
+        catch (InstallValidationException ex)
         {
             logC(ex.getMessage() + "\n");
             logger.log(Level.SEVERE, ex.getMessage(), ex);
@@ -324,8 +393,8 @@ public class Installer
         int i = 0;
         /* Set Default Arguments */
         arguments = new Properties();
-        arguments.setProperty(InstConstants.KEY_DEBUG, "N");
-        arguments.setProperty(InstConstants.KEY_INSTALLER_MODE, InstConstants.MODE_DB_AND_APPS_TIER);
+        arguments.setProperty(InstConstants.DEBUG_KEY, "N");
+        arguments.setProperty(InstConstants.INSTALLER_MODE_KEY, InstConstants.INSTALLER_MODE_DB_AND_APPS_TIER);
 
         while (i < args.length)
         {
@@ -346,7 +415,7 @@ public class Installer
                     logC("WARNING: Debug mode ON, log level=ALL");
                     setRootConsoleHandlerLevel(Level.ALL);
                     PrintLoggerInfo();
-                    arguments.setProperty(InstConstants.KEY_DEBUG, "Y");
+                    arguments.setProperty(InstConstants.DEBUG_KEY, "Y");
                 }
                 else
                 {
@@ -354,9 +423,10 @@ public class Installer
                 }
             }
             /* Parse Installation Mode */
-            else if (arg.toUpperCase().equals(InstConstants.MODE_APPS_TIER))
+            else if ((arg.toUpperCase().equals(InstConstants.INSTALLER_MODE_APPS_TIER))
+                    || (arg.toUpperCase().equals(InstConstants.INSTALLER_MODE_DEPLOY_ADSPLICE_FILES)))
             {
-                arguments.setProperty(InstConstants.KEY_INSTALLER_MODE, arg.toUpperCase());
+                arguments.setProperty(InstConstants.INSTALLER_MODE_KEY, arg.toUpperCase());
             }
             else
             {
@@ -392,11 +462,8 @@ public class Installer
         }
         else
         {
-
             throw new ServletConfigException(
                     "Unable to determine Oracle EBS Application version for web.xml Servlet  Configuration");
         }
-
     }
-
 }

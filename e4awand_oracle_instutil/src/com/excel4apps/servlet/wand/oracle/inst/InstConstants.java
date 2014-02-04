@@ -40,11 +40,16 @@ public final class InstConstants
 
     public static final String LOG_FILE = "e4awand_gl_oracle_install";
 
-    public static final String KEY_INSTALLER_MODE = "INSTALLER_MODE";
-    public static final String KEY_DEBUG = "DB_AND_APPS_TIER";
+    public static final String INSTALLER_MODE_KEY = "INSTALLER_MODE";
+    public static final String DEBUG_KEY = "N";
 
-    public static final String MODE_DB_AND_APPS_TIER = "DB_AND_APPS_TIER";
-    public static final String MODE_APPS_TIER = "APPS_TIER";
+    public static final String INSTALLER_MODE_DB_AND_APPS_TIER = "DB_AND_APPS_TIER";
+    public static final String INSTALLER_MODE_APPS_TIER = "APPS_TIER";
+    public static final String INSTALLER_MODE_DEPLOY_ADSPLICE_FILES = "DEPLOY_ADSPLICE_FILES";
 
     public static final String FILE_EDITION_TYPE_PATCH = "patch";
+
+    public static final String ADSPLICE_SOURCE_FOLDER = "." + File.separator + "adsplice";
+
+    public static final int XXE4A_APP_ID_DEFAULT = 50505;
 }

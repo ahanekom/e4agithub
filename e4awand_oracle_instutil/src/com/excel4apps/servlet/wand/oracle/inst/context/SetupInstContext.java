@@ -1,11 +1,6 @@
 package com.excel4apps.servlet.wand.oracle.inst.context;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,105 +60,6 @@ public class SetupInstContext extends Installer
         catch (IOException e)
         {
             return "";
-        }
-    }
-
-    /**
-     * Performs a database connection test using information from the
-     * Installation Context. A simple select from dual is performed and once
-     * Successful the method confirms that the XXE4A application has been
-     * Registered, a prerequisite for the running of this tool as described in
-     * the Installation documentation.
-     * 
-     * @throws InstContextException
-     */
-    private void databaseTest() throws InstContextException
-    {
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rset = null;
-
-        try
-        {
-            DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-
-            conn = DriverManager.getConnection("jdbc:oracle:thin:@" + ic.getOac().getDBHost() + ":"
-                    + ic.getOac().getDBPort() + ":" + ic.getOac().getDBSid(), ic.getAppsusername(),
-                    String.valueOf(ic.getAppspassword()));
-
-            logger.finer("Connected.");
-
-            // Create a statement
-            stmt = conn.createStatement();
-
-            // Do the SQL "Hello World" thing
-            rset = stmt.executeQuery("select 'Hello World' from dual");
-
-            while (rset.next())
-            {
-                logger.finer(rset.getString(1));
-            }
-
-            logger.finer("Login Successfull");
-
-            try
-            {
-                logger.finer("Application XXE4A Test");
-
-                stmt = conn.createStatement();
-                rset.close();
-                rset = stmt.executeQuery("select COUNT(*) from FND_APPLICATION where APPLICATION_SHORT_NAME = 'XXE4A'");
-
-                while (rset.next())
-                {
-                    logger.finer(String.valueOf(rset.getInt(1)));
-
-                    if (rset.getInt(1) == 1)
-                    {
-                        logger.finer("Application XXE4A Registered");
-                    }
-                    else
-                    {
-                        throw new InstContextException(
-                                "Application XXE4A Not Registered, please register the application and rerun the installer.");
-                    }
-                }
-
-            }
-            catch (SQLException ex)
-            {
-                logger.log(Level.SEVERE, ex.getMessage(), ex);
-                throw new InstContextException("Excel4apps EBS application: XXE4A not registered");
-            }
-
-        }
-        catch (SQLException ex)
-        {
-
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            throw new InstContextException("Database login test unsuccessfull");
-        }
-        finally
-        {
-            try
-            {
-                if (rset != null)
-                {
-                    rset.close();
-                }
-                if (stmt != null)
-                {
-                    stmt.close();
-                }
-                if (conn != null)
-                {
-                    conn.close();
-                }
-            }
-            catch (SQLException e)
-            {
-                throw new InstContextException(e.getMessage());
-            }
         }
     }
 
@@ -254,10 +150,12 @@ public class SetupInstContext extends Installer
      * Collects required information, perform validations and set's up the
      * Installation Context
      * 
+     * @param installDb
+     * 
      * @return Installation Context
      * @throws InstContextException
      */
-    public InstContext setup() throws InstContextException
+    public InstContext setup(boolean installDb) throws InstContextException
     {
         ic.setLogFileName(Installer.logFileName);
         getOAContext();
@@ -265,11 +163,10 @@ public class SetupInstContext extends Installer
 
         validateR122FileEdition();
 
-        if (arguments.getProperty(InstConstants.KEY_INSTALLER_MODE).equals(InstConstants.MODE_DB_AND_APPS_TIER))
+        if (installDb)
         {
             getInstCredentials();
             setupDbConnectDetails();
-            databaseTest();
         }
 
         return ic;

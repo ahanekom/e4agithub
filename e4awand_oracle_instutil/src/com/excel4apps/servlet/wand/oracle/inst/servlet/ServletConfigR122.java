@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
+import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
 
 public class ServletConfigR122 extends ServletConfigR12
 {
-
     /**
      * Oracle E-Business Suite R12.2.2: Bug 17594779 - CUSTOM AUTOCONFIG
      * TEMPLATE OACORE WEB.XML OVERWRITTEN AT STARTUP
@@ -19,8 +19,8 @@ public class ServletConfigR122 extends ServletConfigR12
         logger.fine("Applying R12.2.2: Bug 17594779 Workaround");
         try
         {
-            copyFiles(templateFile.getAbsolutePath(), templateFile.getAbsolutePath() + ".xxe4a_backup");
-            copyFiles(customFile.getAbsolutePath(), templateFile.getAbsolutePath());
+            ArchiveManager.copyFiles(templateFile.getAbsolutePath(), templateFile.getAbsolutePath() + ".xxe4a_backup");
+            ArchiveManager.copyFiles(customFile.getAbsolutePath(), templateFile.getAbsolutePath());
         }
         catch (IOException e)
         {

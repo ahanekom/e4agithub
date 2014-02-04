@@ -48,9 +48,18 @@ public class OAContextParser
 
         public String fileEditionType;
 
+        public String neBase;
+
+        private String applTopNe;
+
         public String getApplTop()
         {
             return applTop;
+        }
+
+        public String getApplTopNe()
+        {
+            return applTopNe;
         }
 
         public String getAppsVersion()
@@ -98,9 +107,19 @@ public class OAContextParser
             return javaTop;
         }
 
+        public String getNeBase()
+        {
+            return neBase;
+        }
+
         public void setApplTop(String applTop)
         {
             this.applTop = applTop;
+        }
+
+        private void setApplTopNe(String applTopNe)
+        {
+            this.applTopNe = applTopNe;
         }
 
         public void setAppsVersion(String appsVersion)
@@ -146,6 +165,12 @@ public class OAContextParser
         public void setJavaTop(String javaTop)
         {
             this.javaTop = javaTop;
+        }
+
+        public void setNeBase(String neBase)
+        {
+            this.neBase = neBase;
+            setApplTopNe(neBase + File.separator + "EBSapps" + File.separator + "appl");
         }
     }
 
@@ -220,10 +245,11 @@ public class OAContextParser
                 logger.finer("file_edition_type=" + oaContext.getFileEditionType());
             }
 
-            if (qName.equalsIgnoreCase("file_edition_name"))
+            if (qName.equalsIgnoreCase("ne_base"))
             {
-                oaContext.setFileEditionName(content);
-                logger.finer("file_edition_name=" + oaContext.getFileEditionName());
+                oaContext.setNeBase(content);
+                logger.finer("ne_base=" + oaContext.getNeBase());
+                logger.finer("appl_top_ne=" + oaContext.getApplTopNe());
             }
         }
 

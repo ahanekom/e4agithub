@@ -7,7 +7,9 @@
 	<property name="dist.dir" location="dist" />
 	<property name="docs.dir" location="docs" />
 	<property name="lib.dir" location="lib" />
+	<property name="adsplice.dir" location="adsplice" />
 	<property name="dist.lib.dir" location="${dist.dir}/lib" />
+	<property name="dist.adspliceb.dir" location="${dist.dir}/adsplice" />
 	<property name="scripts.dir" location="scripts" />
 	<property name="debuglevel" value="source,lines,vars" />
 	<property name="instzip.dir" location="C:\temp\test\build\glwand5.5.0" />
@@ -35,6 +37,7 @@
 		<mkdir dir="${docs.dir}" />
 		<mkdir dir="${dist.dir}" />
 		<mkdir dir="${dist.lib.dir}" />
+		<mkdir dir="${dist.adspliceb.dir}" />
 	</target>
 
 	<!-- Compiles the java code (including the usage of library for JUnit -->
@@ -66,10 +69,13 @@
 		</jar>
 	</target>
 
-	<!-- Copy library files to distribution folder-->
-	<target name="libs">
+	<!-- Copy Misc files to distribution folder-->
+	<target name="misc">
 		<copy file="${scripts.dir}/install.sh" tofile="${dist.dir}/install.sh" overwrite="true" />
 		<copy file="${scripts.dir}/README.txt" tofile="${dist.dir}/README.txt" overwrite="true" />
+		<copy file="${adsplice.dir}/newprods.txt" tofile="${dist.adspliceb.dir}/newprods.txt" overwrite="true" />
+		<copy file="${adsplice.dir}/xxe4aprod.txt" tofile="${dist.adspliceb.dir}/xxe4aprod.txt" overwrite="true" />
+		<copy file="${adsplice.dir}/xxe4aterr.txt" tofile="${dist.adspliceb.dir}/xxe4aterr.txt" overwrite="true" />
 	</target>
 
 	<!-- Builds Dist Zip File -->
@@ -99,7 +105,7 @@
 		<sshexec host="oracle12.excel4apps.com" username="applmgr" password="GL1oned23" trust="true" verbose="true" port="2205" command="cd inst; unzip -o /home/applmgr/inst/glwand5.5.0.zip; chmod 755 /home/applmgr/inst/install.sh; rm /home/applmgr/inst/*.log" />
 	</target>
 
-	<target name="main" depends="compile, jar, docs, libs, buildZip, sftp_oracle122">
+	<target name="main" depends="compile, jar, docs, misc, buildZip, sftp_oracle122">
 		<description>Main target</description>
 	</target>
 

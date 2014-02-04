@@ -1,16 +1,13 @@
 package com.excel4apps.servlet.wand.oracle.inst.servlet;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.logging.Level;
 
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
 import com.excel4apps.servlet.wand.oracle.inst.context.InstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
+import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
 
 /**
  * Performs manipulation of Servlet Template File.
@@ -51,21 +48,6 @@ abstract class ServletConfig extends Installer
         }
     }
 
-    public void copyFiles(String source, String destination) throws IOException
-    {
-        logger.finer("Copy file " + source + " to " + destination);
-        InputStream in = new FileInputStream(source);
-        OutputStream out = new FileOutputStream(destination);
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0)
-        {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-    }
-
     public boolean createCustomFile(File customFile, File templateFile) throws ServletConfigException
     {
         logger.finer("Custom File: " + customFile.getPath());
@@ -85,7 +67,7 @@ abstract class ServletConfig extends Installer
 
             try
             {
-                copyFiles(templateFile.getAbsolutePath(), customFile.getAbsolutePath());
+                ArchiveManager.copyFiles(templateFile.getAbsolutePath(), customFile.getAbsolutePath());
             }
             catch (IOException e)
             {
