@@ -6,9 +6,20 @@ import java.util.logging.Level;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.InstallValidationException;
 
+/**
+ * Installation validation helper class
+ * 
+ * @author Andries Hanekom
+ * 
+ */
 public class InstallValidation extends Installer
 {
 
+    /**
+     * Performs database related validation checks
+     * 
+     * @throws InstallValidationException
+     */
     private static void database() throws InstallValidationException
     {
         DatabaseHelper databaseHelper = new DatabaseHelper();
@@ -29,6 +40,12 @@ public class InstallValidation extends Installer
         }
     }
 
+    /**
+     * Entry method for validation routine.
+     * 
+     * @param database
+     * @throws InstallValidationException
+     */
     public static void validate(boolean database) throws InstallValidationException
     {
         if (database)

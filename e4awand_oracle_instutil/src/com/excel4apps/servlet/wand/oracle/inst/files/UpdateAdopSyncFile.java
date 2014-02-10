@@ -8,6 +8,12 @@ import com.excel4apps.servlet.wand.oracle.inst.Installer;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.UpdateAdopSyncFileException;
 import com.excel4apps.servlet.wand.oracle.inst.utils.FileManager;
 
+/**
+ * Updates ADOP Custom Sync File with location of XXE4A Java Classes
+ * 
+ * @author Andries Hanekom
+ * 
+ */
 public class UpdateAdopSyncFile extends Installer
 {
 
@@ -41,6 +47,5 @@ public class UpdateAdopSyncFile extends Installer
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             throw new UpdateAdopSyncFileException("Unable to update Adop Custom Sync File");
         }
-
     }
 }

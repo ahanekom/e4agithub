@@ -6,6 +6,12 @@ import java.util.logging.Level;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
 import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
 
+/**
+ * Perform R12.2 Servlet Configuration
+ * 
+ * @author Andries Hanekom
+ * 
+ */
 public class ServletConfigR122 extends ServletConfigR12
 {
     /**

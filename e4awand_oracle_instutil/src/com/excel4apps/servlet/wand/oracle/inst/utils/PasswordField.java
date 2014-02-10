@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class PasswordField
 {
     /**
-     * @param input
+     * @param in
      *            stream to be used (e.g. System.in)
      * @param prompt
      *            The prompt to display to the user.

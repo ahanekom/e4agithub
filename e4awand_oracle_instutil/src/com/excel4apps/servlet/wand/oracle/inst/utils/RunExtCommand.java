@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
 
 /**
- * Run an external Linux Operating System command.
+ * Run an external Linux/UNIX Operating System command.
  * 
  * @author Andries Hanekom
  * 
@@ -16,6 +16,12 @@ import com.excel4apps.servlet.wand.oracle.inst.Installer;
 public class RunExtCommand extends Installer
 {
 
+    /**
+     * Run an external command on a Linux/UNIX Operation System
+     * 
+     * @param command
+     * @return
+     */
     public static int run(String command)
     {
         int exitVal = 0;
@@ -28,7 +34,7 @@ public class RunExtCommand extends Installer
             Runtime rt = Runtime.getRuntime();
             Process proc = rt.exec(cmd);
 
-            // Any Error Message
+            /* Any Error Message */
             try
             {
                 InputStreamReader esr = new InputStreamReader(proc.getErrorStream());
@@ -50,7 +56,7 @@ public class RunExtCommand extends Installer
                 exitVal = 1;
             }
 
-            // Any Output
+            /* Any Output */
             try
             {
                 InputStreamReader isr = new InputStreamReader(proc.getInputStream());

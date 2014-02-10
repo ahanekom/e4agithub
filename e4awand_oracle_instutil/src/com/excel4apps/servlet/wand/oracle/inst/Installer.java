@@ -54,7 +54,9 @@ public class Installer
      * Mode: <br>
      * MODE_DB_AND_APPS_TIER - Performs complete installation of database and
      * application tier artifacts. <br>
-     * APPS_TIER - Only installs the application tier components.
+     * APPS_TIER - Only installs the application tier components. <br>
+     * DEPLOY_ADSPLICE_FILES - Deploys ADSPLICE config files for R12.2 custom
+     * application configuration.
      */
     private static void argsHelp()
     {
@@ -65,7 +67,7 @@ public class Installer
         System.out.println("install.sh               # Installs GL Wand Database and Application Tier components");
         System.out.println("install.sh -d            # Installs GL Wand in debug mode");
         System.out
-                .println("install.sh -d APPS_TIER  # Installs only the APPS tier components for GL Wand in debug mode ");
+                .println("install.sh -d APPS_TIER  # Installs only the APPS tier components for GL Wand in debug mode");
         System.out.println("");
         System.out.println("Options:");
         System.out.println("  -d, --debug   Debug mode on");
@@ -74,6 +76,7 @@ public class Installer
         System.out.println("  APPS_TIER                 Installs only the APPS tier components for GL Wand");
         System.out
                 .println("  DEPLOY_ADSPLICE_FILES     Deploy required config files for ADSPLICE utlity to $APPL_TOP/admin folder");
+        System.out.println("                          Only Availble on R12.2.X");
         System.out.println("");
     }
 
@@ -185,6 +188,7 @@ public class Installer
      * Set all root console handles logging level
      * 
      * @param l
+     *            Sets log level
      */
     private static void setRootConsoleHandlerLevel(Level l)
     {
@@ -233,6 +237,17 @@ public class Installer
         return InstConstants.LOG_FILE + "_" + fileName + ".log";
     }
 
+    /**
+     * Install Application and Database Components
+     * 
+     * @throws InstContextException
+     * @throws ServletConfigException
+     * @throws FileDeployException
+     * @throws LoadOAFPagesException
+     * @throws LoadAppsConfigException
+     * @throws InstallValidationException
+     * @throws UpdateAdopSyncFileException
+     */
     protected void appsAndDBTierInstall() throws InstContextException, ServletConfigException, FileDeployException,
             LoadOAFPagesException, LoadAppsConfigException, InstallValidationException, UpdateAdopSyncFileException
     {
@@ -248,16 +263,16 @@ public class Installer
         logC("Servlet Configured Successfully\n");
 
         /* Deploy Artifacts */
-        DeployApplicationFiles.deploy(ic);
+        DeployApplicationFiles.deploy();
         logC("Files Deployed Successfully\n");
 
         /* Install OAF Pages */
         LoadOAFPages lp = new LoadOAFPages();
-        lp.load(ic);
+        lp.load();
         logC("OAF Pages Loaded Successfully\n");
 
         /* Load APPS Configuration */
-        LoadAppsConfig.config(ic);
+        LoadAppsConfig.config();
         logC("APPS Components Created Successfully\n");
 
         if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
@@ -267,6 +282,15 @@ public class Installer
         }
     }
 
+    /**
+     * Installs Only Application Tier components
+     * 
+     * @throws InstContextException
+     * @throws ServletConfigException
+     * @throws FileDeployException
+     * @throws InstallValidationException
+     * @throws UpdateAdopSyncFileException
+     */
     protected void appsTierInstall() throws InstContextException, ServletConfigException, FileDeployException,
             InstallValidationException, UpdateAdopSyncFileException
     {
@@ -282,7 +306,7 @@ public class Installer
         logC("Servlet Configured Successfully\n");
 
         /* Deploy Artifacts */
-        DeployApplicationFiles.deploy(ic);
+        DeployApplicationFiles.deploy();
         logC("Files Deployed Successfully\n");
 
         if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
@@ -292,16 +316,29 @@ public class Installer
         }
     }
 
+    /**
+     * Deploy's ADSPLICE config files required to create custom application
+     * XXE4A on Oracle EBS R12.2.X
+     * 
+     * @throws InstContextException
+     * @throws FileDeployException
+     */
     private void deployAdSpliceFiles() throws InstContextException, FileDeployException
     {
         /* Setup Installation Context */
         SetupInstContext inst = new SetupInstContext();
         ic = inst.setup(true);
 
-        /* Validate Installation Environment */
-
-        DeployAdSpliceFiles.deploy();
-        logC("ADSPLICE Files Deployed Successfully\n");
+        if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_12_2))
+        {
+            DeployAdSpliceFiles.deploy();
+            logC("ADSPLICE Files Deployed Successfully\n");
+        }
+        else
+        {
+            throw new FileDeployException(
+                    "Option only available on a Oracle EBS 12.2 environment, not action performed");
+        }
     }
 
     /**
@@ -333,47 +370,9 @@ public class Installer
             }
 
         }
-        catch (InstContextException ex)
-        {
-            logC(ex.getMessage() + "\n");
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return 1;
-        }
-
-        catch (InstallValidationException ex)
-        {
-            logC(ex.getMessage() + "\n");
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return 1;
-        }
-        catch (FileDeployException ex)
-        {
-            logC(ex.getMessage() + "\n");
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return 1;
-        }
-        catch (ServletConfigException ex)
-        {
-            logC(ex.getMessage() + "\n");
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return 1;
-        }
-        catch (LoadOAFPagesException ex)
-        {
-            logC(ex.getMessage() + "\n");
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return 1;
-        }
-        catch (LoadAppsConfigException ex)
-        {
-            logC(ex.getMessage() + "\n");
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            return 1;
-        }
         catch (Exception ex)
         {
             logC(ex.getMessage() + "\n");
-            logger.log(Level.SEVERE, "Unhandled Exception");
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             return 1;
         }
@@ -438,7 +437,6 @@ public class Installer
     /**
      * Perform servlet config based on Application Version
      * 
-     * @param ic
      * @throws ServletConfigException
      */
     public void setupServlet() throws ServletConfigException
@@ -447,17 +445,17 @@ public class Installer
         if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_11))
         {
             ServletConfigR11 servletConfigR11 = new ServletConfigR11();
-            servletConfigR11.configure(ic, InstConstants.APPS_11_SERVLET_FILE);
+            servletConfigR11.configure(InstConstants.APPS_11_SERVLET_FILE);
         }
         else if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_12))
         {
             ServletConfigR12 servletConfigR12 = new ServletConfigR12();
-            servletConfigR12.configure(ic, InstConstants.APPS_12_SERVLET_FILE);
+            servletConfigR12.configure(InstConstants.APPS_12_SERVLET_FILE);
         }
         else if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_12_2))
         {
             ServletConfigR122 servletConfigR122 = new ServletConfigR122();
-            servletConfigR122.configure(ic, InstConstants.APPS_122_SERVLET_FILE);
+            servletConfigR122.configure(InstConstants.APPS_122_SERVLET_FILE);
             servletConfigR122.applyWorkaround();
         }
         else

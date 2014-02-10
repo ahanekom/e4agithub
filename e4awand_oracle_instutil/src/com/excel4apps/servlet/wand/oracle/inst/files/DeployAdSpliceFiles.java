@@ -16,17 +16,29 @@ import com.excel4apps.servlet.wand.oracle.inst.exceptions.FileDeployException;
 import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
 import com.excel4apps.servlet.wand.oracle.inst.utils.DatabaseHelper;
 
+/**
+ * Handles deployment of ADSPLICE utility configuration files
+ * 
+ * @author Andries Hanekom
+ * 
+ */
 public class DeployAdSpliceFiles extends Installer
 {
 
     private static final String XXE4APROD_TXT_FILE_NAME = "xxe4aprod.txt";
     private static String[] adspliceFileNames = new String[] { "newprods.txt", XXE4APROD_TXT_FILE_NAME, "xxe4aterr.txt" };
 
+    /**
+     * Copy ADSPLICE config files from installer source folder to ADSPLICE
+     * Destination Folder
+     * 
+     * @throws FileDeployException
+     */
     private static void copyFiles() throws FileDeployException
     {
         try
         {
-            String adspliceDestFolder = ic.getOac().getApplTop() + File.separator;
+            String adspliceDestFolder = ic.getOac().getApplTop() + File.separator + "admin" + File.separator;
 
             for (int i = 0; i < adspliceFileNames.length; i++)
             {
@@ -41,6 +53,14 @@ public class DeployAdSpliceFiles extends Installer
         }
     }
 
+    /**
+     * Entry method for file deployment. Checks availability of default XXE4A
+     * application id {@link InstConstants.XXE4A_APP_ID_DEFAULT}, if not
+     * available get's next available id and updates config files. Files are
+     * then deployed to default ADSPLICE processing area $APPL_TOP/admin.
+     * 
+     * @throws FileDeployException
+     */
     public static void deploy() throws FileDeployException
     {
         DatabaseHelper databaseHelper = new DatabaseHelper();
@@ -86,6 +106,13 @@ public class DeployAdSpliceFiles extends Installer
         }
     }
 
+    /**
+     * Modify the ADSPLICE config files of the DEFAULT XXE4A Application ID has
+     * been used.
+     * 
+     * @param appId
+     * @throws FileDeployException
+     */
     private static void updateAdSpliceFile(int appId) throws FileDeployException
     {
         try
@@ -134,6 +161,13 @@ public class DeployAdSpliceFiles extends Installer
         }
     }
 
+    /**
+     * Verify availability of Application ID parameter
+     * 
+     * @param applicationID
+     * @return
+     * @throws FileDeployException
+     */
     private static int verifyAppIdAvailibility(int applicationID) throws FileDeployException
     {
 

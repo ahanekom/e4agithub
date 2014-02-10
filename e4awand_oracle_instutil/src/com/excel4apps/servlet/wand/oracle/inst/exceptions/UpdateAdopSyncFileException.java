@@ -1,7 +1,7 @@
 package com.excel4apps.servlet.wand.oracle.inst.exceptions;
 
 /**
- * Raised when an error occurs during the configuration of the Servlet Config
+ * Raised when an error occurs during the update of the ADOP Custom Sync File
  * file.
  * 
  * @author Andries Hanekom

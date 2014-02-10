@@ -8,6 +8,12 @@ import java.sql.Statement;
 
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
 
+/**
+ * Database interface class for Installer
+ * 
+ * @author Andries Hanekom
+ * 
+ */
 public class DatabaseHelper extends Installer
 {
 
@@ -15,6 +21,11 @@ public class DatabaseHelper extends Installer
     private Statement stmt = null;
     private ResultSet rset = null;
 
+    /**
+     * Close ResultSet, Statement and Connection
+     * 
+     * @throws SQLException
+     */
     protected void close() throws SQLException
     {
         if (rset != null)
@@ -35,15 +46,13 @@ public class DatabaseHelper extends Installer
      * Performs a database connection test using information from the
      * Installation Context, A simple select from dual is performed.
      * 
-     * @param testXXE4AApplication
-     * 
      * @throws SQLException
      */
     public void databaseConnectionTest() throws SQLException
     {
         ResultSet rset;
 
-        // Do the SQL "Hello World" Test
+        /* Do the SQL "Hello World" Test */
         rset = executeQuery("select 'Hello World' from dual");
 
         while (rset.next())
@@ -65,10 +74,10 @@ public class DatabaseHelper extends Installer
 
         logger.finer("Connected.");
 
-        // Create a statement
+        /* Create a statement */
         stmt = conn.createStatement();
 
-        // Execute the SQL
+        /* Execute the SQL */
         rset = stmt.executeQuery(sql);
 
         return rset;

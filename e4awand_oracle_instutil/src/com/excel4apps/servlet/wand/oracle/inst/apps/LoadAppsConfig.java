@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
-import com.excel4apps.servlet.wand.oracle.inst.context.InstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.LoadAppsConfigException;
 import com.excel4apps.servlet.wand.oracle.inst.utils.RunExtCommand;
 
@@ -88,11 +87,9 @@ public class LoadAppsConfig extends Installer
     /**
      * Load the Wands Menu, Executable and Responsibility configuration
      * 
-     * @param ic
-     *            Installation Context
      * @throws LoadAppsConfigException
      */
-    public static void config(InstContext ic) throws LoadAppsConfigException
+    public static void config() throws LoadAppsConfigException
     {
 
         String userCreds = ic.getAppsusername() + "/" + String.valueOf(ic.getAppspassword());
@@ -126,6 +123,5 @@ public class LoadAppsConfig extends Installer
                 }
             }
         }
-
     }
 }

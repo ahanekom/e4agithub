@@ -9,9 +9,23 @@ import java.io.IOException;
 
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
 
+/**
+ * File management utility class
+ * 
+ * @author Andries Hanekom
+ * 
+ */
 public class FileManager extends Installer
 {
 
+    /**
+     * Replace target contents of file with replacement String
+     * 
+     * @param file
+     * @param target
+     * @param replacement
+     * @throws IOException
+     */
     public static void modifyFile(File file, String target, String replacement) throws IOException
     {
 

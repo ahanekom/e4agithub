@@ -1,8 +1,8 @@
 package com.excel4apps.servlet.wand.oracle.inst.exceptions;
 
 /**
- * Raised when and error occurs during the initialization of the the
- * Installation Context object.
+ * Raised when and error occurs during the initialisation of the Installation
+ * Context object.
  * 
  * @author Andries Hanekom
  * 

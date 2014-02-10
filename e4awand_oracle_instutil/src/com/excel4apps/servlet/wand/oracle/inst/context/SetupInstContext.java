@@ -37,7 +37,7 @@ public class SetupInstContext extends Installer
         }
     }
 
-    // Utility function to read a line from standard input
+    /** Utility function to read a line from standard input */
     static String readEntry(String prompt)
     {
         try
@@ -63,6 +63,11 @@ public class SetupInstContext extends Installer
         }
     }
 
+    /**
+     * Reads installation credentials for APPS user
+     * 
+     * @throws InstContextException
+     */
     private void getInstCredentials() throws InstContextException
     {
         String user = null;
@@ -109,6 +114,12 @@ public class SetupInstContext extends Installer
         }
     }
 
+    /**
+     * Reads, parses and exracts required environment variables from
+     * CONTEXT_FILE
+     * 
+     * @throws InstContextException
+     */
     private void getOAContext() throws InstContextException
     {
         OAContextParser oa = new OAContextParser();
@@ -161,7 +172,10 @@ public class SetupInstContext extends Installer
         getOAContext();
         setupAppsMajorVersion();
 
-        validateR122FileEdition();
+        if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
+        {
+            validateR122FileEdition();
+        }
 
         if (installDb)
         {
@@ -172,14 +186,18 @@ public class SetupInstContext extends Installer
         return ic;
     }
 
+    /**
+     * Setup the Installation environments Major Release Version
+     */
     private void setupAppsMajorVersion()
     {
         String appsMayorVersion = ic.getOac().getAppsVersion().substring(0, 2);
 
         if (appsMayorVersion.equals("12"))
         {
-            logger.finer(ic.getOac().getAppsVersion().substring(3, 4));
-            if (ic.getOac().getAppsVersion().substring(3, 4).equals("2"))
+            String r12MinorVersion = ic.getOac().getAppsVersion().substring(3, 4);
+            logger.finer("Version 12, minor version: " + r12MinorVersion);
+            if (r12MinorVersion.equals("2"))
             {
                 appsMayorVersion = "12.2";
             }
@@ -189,6 +207,9 @@ public class SetupInstContext extends Installer
         logger.finer("appsMayorVersion=" + appsMayorVersion);
     }
 
+    /**
+     * Get database connection details for installation
+     */
     private void setupDbConnectDetails()
     {
         if ((ic.getOac().getDBHost() == null) || (ic.getOac().getDBPort() == null) || (ic.getOac().getDBSid() == null))
@@ -223,6 +244,12 @@ public class SetupInstContext extends Installer
         logC("");
     }
 
+    /**
+     * Confirms that install on R12.2 environment is executed in Patch Edition
+     * File System
+     * 
+     * @throws InstContextException
+     */
     private void validateR122FileEdition() throws InstContextException
     {
         if (!ic.getOac().getFileEditionType().equals(InstConstants.FILE_EDITION_TYPE_PATCH))

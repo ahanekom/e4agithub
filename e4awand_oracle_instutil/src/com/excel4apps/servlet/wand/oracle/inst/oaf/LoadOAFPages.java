@@ -11,7 +11,6 @@ import oracle.jrad.tools.xml.importer.XMLImporter;
 
 import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
-import com.excel4apps.servlet.wand.oracle.inst.context.InstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.LoadOAFPagesException;
 
 /**
@@ -22,7 +21,7 @@ import com.excel4apps.servlet.wand.oracle.inst.exceptions.LoadOAFPagesException;
  */
 public class LoadOAFPages extends Installer
 {
-    /*
+    /**
      * ExitManager Class prevents call to XMLImporter.main(params) to end
      * running JVM instance when the XMLImporter.main call completes and it
      * calls System.exit
@@ -84,12 +83,9 @@ public class LoadOAFPages extends Installer
     /**
      * Performs the OAF page load
      * 
-     * @param ic
-     *            Installation Context
-     * 
      * @throws LoadOAFPagesException
      */
-    public void load(InstContext ic) throws LoadOAFPagesException
+    public void load() throws LoadOAFPagesException
     {
         try
         {
@@ -117,7 +113,7 @@ public class LoadOAFPages extends Installer
 
                 try
                 {
-                    loadFile(ic, page);
+                    loadFile(page);
                 }
                 catch (SecurityException s)
                 {
@@ -145,10 +141,10 @@ public class LoadOAFPages extends Installer
      *            Page to be loaded
      * @throws LoadOAFPagesException
      */
-    private void loadFile(InstContext ic, String page) throws LoadOAFPagesException
+    private void loadFile(String page) throws LoadOAFPagesException
     {
 
-        String[] params = setupParams(ic, page);
+        String[] params = setupParams(page);
 
         PrintStream orgOutStream = null;
         PrintStream orgErrStream = null;
@@ -157,7 +153,7 @@ public class LoadOAFPages extends Installer
         PrintStream outPS = null;
         try
         {
-            // Saving the orginal stream
+            /* Saving the orginal stream */
             orgOutStream = System.out;
             orgErrStream = System.err;
 
@@ -170,12 +166,12 @@ public class LoadOAFPages extends Installer
                 logger.finer("outPS.checkError true");
             }
 
-            // Redirecting console output to file
+            /* Redirecting console output to file */
             System.setOut(outPS);
 
             System.out.println("Printing from System.out to log");
 
-            // Redirecting runtime exceptions to file
+            /* Redirecting runtime exceptions to file */
             System.setErr(outPS);
 
             logger.finer("Before XMLImporter.doImport");
@@ -203,7 +199,7 @@ public class LoadOAFPages extends Installer
         }
         finally
         {
-            // Restoring back to console
+            /* Restoring back to console */
             outPS.flush();
             logger.finer(f.toString());
             outPS.close();
@@ -221,7 +217,7 @@ public class LoadOAFPages extends Installer
      *            OAF page to be loaded
      * @return The argument string for call to {@link XMLImporter}
      */
-    private String[] setupParams(InstContext ic, String page)
+    private String[] setupParams(String page)
     {
 
         String userNameParam = "-username";

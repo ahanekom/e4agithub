@@ -1,8 +1,7 @@
 package com.excel4apps.servlet.wand.oracle.inst.exceptions;
 
 /**
- * Raised when an error occurs during the configuration of the Servlet Config
- * file.
+ * Raised when an error occurs during Installation Validation
  * 
  * @author Andries Hanekom
  * 

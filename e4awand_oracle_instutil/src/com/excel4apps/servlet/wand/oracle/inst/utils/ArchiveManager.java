@@ -22,7 +22,6 @@ import com.excel4apps.servlet.wand.oracle.inst.Installer;
  */
 public class ArchiveManager extends Installer
 {
-    //public static final Logger logger = Logger.getLogger(Installer.class.getName());
 
     public static void copyFiles(String source, String destination) throws IOException
     {

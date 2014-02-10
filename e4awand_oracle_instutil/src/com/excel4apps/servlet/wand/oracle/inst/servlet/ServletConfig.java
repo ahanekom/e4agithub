@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
-import com.excel4apps.servlet.wand.oracle.inst.context.InstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
 import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
 
@@ -20,7 +19,7 @@ abstract class ServletConfig extends Installer
     protected File templateFile;
     protected File customFile;
 
-    public void configure(InstContext ic, String servletFile) throws ServletConfigException
+    public void configure(String servletFile) throws ServletConfigException
     {
         String fndTop = ic.getOac().getFndTop();
         String templateTop;
@@ -48,6 +47,14 @@ abstract class ServletConfig extends Installer
         }
     }
 
+    /**
+     * Creates custom file from template
+     * 
+     * @param customFile
+     * @param templateFile
+     * @return
+     * @throws ServletConfigException
+     */
     public boolean createCustomFile(File customFile, File templateFile) throws ServletConfigException
     {
         logger.finer("Custom File: " + customFile.getPath());
@@ -93,5 +100,4 @@ abstract class ServletConfig extends Installer
     }
 
     protected abstract void modifyCustomFile(File customFile) throws ServletConfigException;
-
 }
