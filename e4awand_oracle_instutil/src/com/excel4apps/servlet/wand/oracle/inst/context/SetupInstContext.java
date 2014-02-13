@@ -2,7 +2,6 @@ package com.excel4apps.servlet.wand.oracle.inst.context;
 
 import java.io.IOException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
@@ -18,8 +17,6 @@ import com.excel4apps.servlet.wand.oracle.inst.utils.PasswordField;
  */
 public class SetupInstContext extends Installer
 {
-
-    public static final Logger logger = Logger.getLogger(Installer.class.getName());
 
     private InstContext ic = new InstContext();
 
@@ -38,7 +35,7 @@ public class SetupInstContext extends Installer
     }
 
     /** Utility function to read a line from standard input */
-    static String readEntry(String prompt)
+    private static String readEntry(String prompt)
     {
         try
         {

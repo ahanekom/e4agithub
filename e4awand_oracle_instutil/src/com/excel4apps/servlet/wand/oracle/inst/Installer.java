@@ -40,11 +40,10 @@ import com.excel4apps.servlet.wand.oracle.inst.utils.InstallValidation;
 
 public class Installer
 {
-    public static final Logger logger = Logger.getLogger(Installer.class.getName());
-    public static String logFileName;
+    protected static final Logger logger = Logger.getLogger(Installer.class.getName());
+    protected static String logFileName;
     private static Handler logFileHandler;
-    protected static Properties arguments;
-
+    private static Properties arguments;
     protected static InstContext ic;
 
     /**
@@ -248,7 +247,7 @@ public class Installer
      * @throws InstallValidationException
      * @throws UpdateAdopSyncFileException
      */
-    protected void appsAndDBTierInstall() throws InstContextException, ServletConfigException, FileDeployException,
+    private void appsAndDBTierInstall() throws InstContextException, ServletConfigException, FileDeployException,
             LoadOAFPagesException, LoadAppsConfigException, InstallValidationException, UpdateAdopSyncFileException
     {
         /* Setup Installation Context */
@@ -291,7 +290,7 @@ public class Installer
      * @throws InstallValidationException
      * @throws UpdateAdopSyncFileException
      */
-    protected void appsTierInstall() throws InstContextException, ServletConfigException, FileDeployException,
+    private void appsTierInstall() throws InstContextException, ServletConfigException, FileDeployException,
             InstallValidationException, UpdateAdopSyncFileException
     {
         /* Setup Installation Context */
@@ -329,7 +328,7 @@ public class Installer
         SetupInstContext inst = new SetupInstContext();
         ic = inst.setup(true);
 
-        if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_12_2))
+        if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
         {
             DeployAdSpliceFiles.deploy();
             logC("ADSPLICE Files Deployed Successfully\n");
@@ -439,20 +438,20 @@ public class Installer
      * 
      * @throws ServletConfigException
      */
-    public void setupServlet() throws ServletConfigException
+    private void setupServlet() throws ServletConfigException
     {
 
-        if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_11))
+        if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_11))
         {
             ServletConfigR11 servletConfigR11 = new ServletConfigR11();
             servletConfigR11.configure(InstConstants.APPS_11_SERVLET_FILE);
         }
-        else if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_12))
+        else if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12))
         {
             ServletConfigR12 servletConfigR12 = new ServletConfigR12();
             servletConfigR12.configure(InstConstants.APPS_12_SERVLET_FILE);
         }
-        else if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_12_2))
+        else if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
         {
             ServletConfigR122 servletConfigR122 = new ServletConfigR122();
             servletConfigR122.configure(InstConstants.APPS_122_SERVLET_FILE);

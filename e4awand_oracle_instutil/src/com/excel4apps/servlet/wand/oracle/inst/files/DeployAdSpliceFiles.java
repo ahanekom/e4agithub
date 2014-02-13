@@ -55,7 +55,7 @@ public class DeployAdSpliceFiles extends Installer
 
     /**
      * Entry method for file deployment. Checks availability of default XXE4A
-     * application id {@link InstConstants.XXE4A_APP_ID_DEFAULT}, if not
+     * application id (InstConstants.XXE4A_APP_ID_DEFAULT), if not
      * available get's next available id and updates config files. Files are
      * then deployed to default ADSPLICE processing area $APPL_TOP/admin.
      * 

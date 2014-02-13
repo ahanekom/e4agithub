@@ -31,24 +31,24 @@ public class OAContextParser
     public class OAContext
     {
 
-        public String appsVersion;
-        public String applTop;
-        public String javaTop;
-        public String fndTop;
+        private String appsVersion;
+        private String applTop;
+        private String javaTop;
+        private String fndTop;
 
-        public String dbcFileName;
+        private String dbcFileName;
 
-        public String fileEditionName;
+        private String fileEditionName;
 
-        public String dbhost;
+        private String dbhost;
 
-        public String dbsid;
+        private String dbsid;
 
-        public String dbport;
+        private String dbport;
 
-        public String fileEditionType;
+        private String fileEditionType;
 
-        public String neBase;
+        private String neBase;
 
         private String applTopNe;
 

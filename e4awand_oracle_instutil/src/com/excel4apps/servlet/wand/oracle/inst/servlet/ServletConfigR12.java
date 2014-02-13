@@ -19,7 +19,7 @@ import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException
 public class ServletConfigR12 extends ServletConfig
 {
 
-    public void modifyCustomFile(File customFile) throws ServletConfigException
+    protected void modifyCustomFile(File customFile) throws ServletConfigException
     {
 
         /*

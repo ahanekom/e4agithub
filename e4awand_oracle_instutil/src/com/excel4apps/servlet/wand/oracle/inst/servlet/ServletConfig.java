@@ -52,10 +52,10 @@ abstract class ServletConfig extends Installer
      * 
      * @param customFile
      * @param templateFile
-     * @return
+     * @return If no exception is raised return true boolean value to indicate success
      * @throws ServletConfigException
      */
-    public boolean createCustomFile(File customFile, File templateFile) throws ServletConfigException
+    protected boolean createCustomFile(File customFile, File templateFile) throws ServletConfigException
     {
         logger.finer("Custom File: " + customFile.getPath());
         logger.finer("Template File: " + templateFile.getPath());
@@ -89,12 +89,12 @@ abstract class ServletConfig extends Installer
         return true;
     }
 
-    public boolean customFilExists(File customFile)
+    protected boolean customFilExists(File customFile)
     {
         return (customFile.exists());
     }
 
-    public boolean customFolderExists(File customFolder)
+    protected boolean customFolderExists(File customFolder)
     {
         return (customFolder.exists());
     }

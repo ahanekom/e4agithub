@@ -11,13 +11,13 @@ import com.excel4apps.servlet.wand.oracle.inst.context.xml.OAContextParser.OACon
  */
 public class InstContext
 {
-    public String logFileName;
-    public String appsMayorVersion;
-    public OAContext oac;
-    public String appsusername;
-    public String contextFile;
+    private String logFileName;
+    private String appsMayorVersion;
+    private OAContext oac;
+    private String appsusername;
+    private String contextFile;
 
-    char[] appspassword = null;
+    private char[] appspassword = null;
 
     public String getAppsMayorVersion()
     {

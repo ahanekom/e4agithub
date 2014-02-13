@@ -20,7 +20,7 @@ public class RunExtCommand extends Installer
      * Run an external command on a Linux/UNIX Operation System
      * 
      * @param command
-     * @return
+     * @return The exit value of the command: 0 = Success, 1 = Error
      */
     public static int run(String command)
     {

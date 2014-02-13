@@ -59,7 +59,7 @@ public class LoadOAFPages extends Installer
 
     public LoadOAFPages()
     {
-        super();
+        //super();
         sm = new ExitManager(System.getSecurityManager());
         System.setSecurityManager(sm);
     }
@@ -97,7 +97,7 @@ public class LoadOAFPages extends Installer
                 String appsMds;
                 logger.finer("OAF Page=" + pages[i]);
 
-                if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_11))
+                if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_11))
                 {
                     appsMds = InstConstants.APPS_11_MDS;
                 }
@@ -229,7 +229,7 @@ public class LoadOAFPages extends Installer
         String rootPackageParam = "-rootPackage";
         String rootPackageValue = "/com/excel4apps/oracle/apps/xxe4a/wands";
 
-        if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_11))
+        if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_11))
         {
             rootDirValue = ic.getOac().getApplTop() + File.separator + InstConstants.APPS_11_MDS;
         }
