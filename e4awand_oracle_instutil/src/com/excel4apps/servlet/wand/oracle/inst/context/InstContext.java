@@ -11,23 +11,13 @@ import com.excel4apps.servlet.wand.oracle.inst.context.xml.OAContextParser.OACon
  */
 public class InstContext
 {
-    public String logFileName;
-    public String appsMayorVersion;
-    public OAContext oac;
-    public String appsusername;
-    public String contextFile;
+    private String logFileName;
+    private String appsMayorVersion;
+    private OAContext oac;
+    private String appsusername;
+    private String contextFile;
 
-    public String getContextFile()
-    {
-        return contextFile;
-    }
-
-    public void setContextFile(String contextFile)
-    {
-        this.contextFile = contextFile;
-    }
-
-    char[] appspassword = null;
+    private char[] appspassword = null;
 
     public String getAppsMayorVersion()
     {
@@ -42,6 +32,11 @@ public class InstContext
     public String getAppsusername()
     {
         return appsusername;
+    }
+
+    public String getContextFile()
+    {
+        return contextFile;
     }
 
     public String getLogFileName()
@@ -67,6 +62,11 @@ public class InstContext
     public void setAppsusername(String appsusername)
     {
         this.appsusername = appsusername;
+    }
+
+    public void setContextFile(String contextFile)
+    {
+        this.contextFile = contextFile;
     }
 
     public void setLogFileName(String logFileName)

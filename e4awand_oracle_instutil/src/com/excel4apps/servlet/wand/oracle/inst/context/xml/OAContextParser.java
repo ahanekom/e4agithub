@@ -30,22 +30,36 @@ public class OAContextParser
      */
     public class OAContext
     {
-        public String appsVersion;
-        public String applTop;
-        public String javaTop;
-        public String fndTop;
 
-        public String dbcFileName;
+        private String appsVersion;
+        private String applTop;
+        private String javaTop;
+        private String fndTop;
 
-        public String dbhost;
+        private String dbcFileName;
 
-        public String dbsid;
+        private String fileEditionName;
 
-        public String dbport;
+        private String dbhost;
+
+        private String dbsid;
+
+        private String dbport;
+
+        private String fileEditionType;
+
+        private String neBase;
+
+        private String applTopNe;
 
         public String getApplTop()
         {
             return applTop;
+        }
+
+        public String getApplTopNe()
+        {
+            return applTopNe;
         }
 
         public String getAppsVersion()
@@ -73,6 +87,16 @@ public class OAContextParser
             return dbsid;
         }
 
+        public String getFileEditionName()
+        {
+            return fileEditionName;
+        }
+
+        public String getFileEditionType()
+        {
+            return fileEditionType;
+        }
+
         public String getFndTop()
         {
             return fndTop;
@@ -83,9 +107,19 @@ public class OAContextParser
             return javaTop;
         }
 
+        public String getNeBase()
+        {
+            return neBase;
+        }
+
         public void setApplTop(String applTop)
         {
             this.applTop = applTop;
+        }
+
+        private void setApplTopNe(String applTopNe)
+        {
+            this.applTopNe = applTopNe;
         }
 
         public void setAppsVersion(String appsVersion)
@@ -113,6 +147,16 @@ public class OAContextParser
             dbsid = value;
         }
 
+        public void setFileEditionName(String fileEditionName)
+        {
+            this.fileEditionName = fileEditionName;
+        }
+
+        public void setFileEditionType(String fileEditionType)
+        {
+            this.fileEditionType = fileEditionType;
+        }
+
         public void setFndTop(String fndTop)
         {
             this.fndTop = fndTop;
@@ -121,6 +165,12 @@ public class OAContextParser
         public void setJavaTop(String javaTop)
         {
             this.javaTop = javaTop;
+        }
+
+        public void setNeBase(String neBase)
+        {
+            this.neBase = neBase;
+            setApplTopNe(neBase + File.separator + "EBSapps" + File.separator + "appl");
         }
     }
 
@@ -187,6 +237,19 @@ public class OAContextParser
             {
                 oaContext.setFndTop(content);
                 logger.finer("fnd_top=" + oaContext.getFndTop());
+            }
+
+            if (qName.equalsIgnoreCase("file_edition_type"))
+            {
+                oaContext.setFileEditionType(content);
+                logger.finer("file_edition_type=" + oaContext.getFileEditionType());
+            }
+
+            if (qName.equalsIgnoreCase("ne_base"))
+            {
+                oaContext.setNeBase(content);
+                logger.finer("ne_base=" + oaContext.getNeBase());
+                logger.finer("appl_top_ne=" + oaContext.getApplTopNe());
             }
         }
 

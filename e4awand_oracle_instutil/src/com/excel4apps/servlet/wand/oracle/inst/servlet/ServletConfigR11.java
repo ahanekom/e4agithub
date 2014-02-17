@@ -8,8 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
-import com.excel4apps.servlet.wand.oracle.inst.context.InstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
 
 /**
@@ -20,36 +18,8 @@ import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException
  */
 public class ServletConfigR11 extends ServletConfig
 {
-    public static void configure(InstContext ic) throws ServletConfigException
-    {
-        String fndTop = ic.getOac().getFndTop();
-        String templateTop;
 
-        templateTop = fndTop + File.separator + "admin" + File.separator + "template";
-
-        String templateFileString = templateTop + File.separator + InstConstants.APPS_11_SERVLET_FILE;
-        String customFileString = templateTop + File.separator + "custom" + File.separator
-                + InstConstants.APPS_11_SERVLET_FILE;
-
-        File customFile = new File(customFileString);
-        File templateFile = new File(templateFileString);
-
-        if (customFile.exists())
-        {
-            modifyCustomFile(customFile);
-        }
-        else
-        {
-            createCustomFile(customFile, templateFile);
-
-            if (customFile.exists())
-            {
-                modifyCustomFile(customFile);
-            }
-        }
-    }
-
-    private static void modifyCustomFile(File customFile) throws ServletConfigException
+    protected void modifyCustomFile(File customFile) throws ServletConfigException
     {
         /*
          * #------- Excel4apps Wands 5 Alias --------------------------------

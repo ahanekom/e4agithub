@@ -1,13 +1,7 @@
 package com.excel4apps.servlet.wand.oracle.inst.context;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
@@ -23,8 +17,6 @@ import com.excel4apps.servlet.wand.oracle.inst.utils.PasswordField;
  */
 public class SetupInstContext extends Installer
 {
-
-    public static final Logger logger = Logger.getLogger(Installer.class.getName());
 
     private InstContext ic = new InstContext();
 
@@ -42,8 +34,8 @@ public class SetupInstContext extends Installer
         }
     }
 
-    // Utility function to read a line from standard input
-    static String readEntry(String prompt)
+    /** Utility function to read a line from standard input */
+    private static String readEntry(String prompt)
     {
         try
         {
@@ -69,104 +61,10 @@ public class SetupInstContext extends Installer
     }
 
     /**
-     * Performs a database connection test using information from the
-     * Installation Context. A simple select from dual is performed and once
-     * Successful the method confirms that the XXE4A application has been
-     * Registered, a prerequisite for the running of this tool as described in
-     * the Installation documentation.
+     * Reads installation credentials for APPS user
      * 
      * @throws InstContextException
      */
-    private void databaseTest() throws InstContextException
-    {
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rset = null;
-
-        try
-        {
-            DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-
-            conn = DriverManager.getConnection("jdbc:oracle:thin:@" + ic.getOac().getDBHost() + ":"
-                    + ic.getOac().getDBPort() + ":" + ic.getOac().getDBSid(), ic.getAppsusername(),
-                    String.valueOf(ic.getAppspassword()));
-
-            logger.finer("Connected.");
-
-            // Create a statement
-            stmt = conn.createStatement();
-
-            // Do the SQL "Hello World" thing
-            rset = stmt.executeQuery("select 'Hello World' from dual");
-
-            while (rset.next())
-            {
-                logger.finer(rset.getString(1));
-            }
-
-            logger.finer("Login Successfull");
-
-            try
-            {
-                logger.finer("Application XXE4A Test");
-
-                stmt = conn.createStatement();
-                rset.close();
-                rset = stmt.executeQuery("select COUNT(*) from FND_APPLICATION where APPLICATION_SHORT_NAME = 'XXE4A'");
-
-                while (rset.next())
-                {
-                    logger.finer(String.valueOf(rset.getInt(1)));
-
-                    if (rset.getInt(1) == 1)
-                    {
-                        logger.finer("Application XXE4A Registered");
-                    }
-                    else
-                    {
-                        throw new InstContextException(
-                                "Application XXE4A Not Registered, please register the application and rerun the installer.");
-                    }
-                }
-
-            }
-            catch (SQLException ex)
-            {
-                logger.log(Level.SEVERE, ex.getMessage(), ex);
-                throw new InstContextException("Excel4apps EBS application: XXE4A not registered");
-            }
-
-        }
-        catch (SQLException ex)
-        {
-
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-            throw new InstContextException("Database login test unsuccessfull");
-        }
-        finally
-        {
-            try
-            {
-                if (rset != null)
-                {
-                    rset.close();
-                }
-                if (stmt != null)
-                {
-                    stmt.close();
-                }
-                if (conn != null)
-                {
-                    conn.close();
-                }
-            }
-            catch (SQLException e)
-            {
-                throw new InstContextException(e.getMessage());
-            }
-        }
-    }
-
     private void getInstCredentials() throws InstContextException
     {
         String user = null;
@@ -213,6 +111,12 @@ public class SetupInstContext extends Installer
         }
     }
 
+    /**
+     * Reads, parses and exracts required environment variables from
+     * CONTEXT_FILE
+     * 
+     * @throws InstContextException
+     */
     private void getOAContext() throws InstContextException
     {
         OAContextParser oa = new OAContextParser();
@@ -254,33 +158,55 @@ public class SetupInstContext extends Installer
      * Collects required information, perform validations and set's up the
      * Installation Context
      * 
+     * @param installDb
+     * 
      * @return Installation Context
      * @throws InstContextException
      */
-    public InstContext setup() throws InstContextException
+    public InstContext setup(boolean installDb) throws InstContextException
     {
         ic.setLogFileName(Installer.logFileName);
         getOAContext();
         setupAppsMajorVersion();
 
-        if (arguments.getProperty(InstConstants.KEY_INSTALLER_MODE).equals(InstConstants.MODE_DB_AND_APPS_TIER))
+        if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
+        {
+            validateR122FileEdition();
+        }
+
+        if (installDb)
         {
             getInstCredentials();
             setupDbConnectDetails();
-            databaseTest();
         }
 
         return ic;
     }
 
+    /**
+     * Setup the Installation environments Major Release Version
+     */
     private void setupAppsMajorVersion()
     {
         String appsMayorVersion = ic.getOac().getAppsVersion().substring(0, 2);
+
+        if (appsMayorVersion.equals("12"))
+        {
+            String r12MinorVersion = ic.getOac().getAppsVersion().substring(3, 4);
+            logger.finer("Version 12, minor version: " + r12MinorVersion);
+            if (r12MinorVersion.equals("2"))
+            {
+                appsMayorVersion = "12.2";
+            }
+        }
 
         ic.setAppsMayorVersion(appsMayorVersion);
         logger.finer("appsMayorVersion=" + appsMayorVersion);
     }
 
+    /**
+     * Get database connection details for installation
+     */
     private void setupDbConnectDetails()
     {
         if ((ic.getOac().getDBHost() == null) || (ic.getOac().getDBPort() == null) || (ic.getOac().getDBSid() == null))
@@ -313,5 +239,19 @@ public class SetupInstContext extends Installer
         logC("Database Connection Details used for this installation: " + ic.getOac().getDBHost() + ":"
                 + ic.getOac().getDBPort() + ":" + ic.getOac().getDBSid());
         logC("");
+    }
+
+    /**
+     * Confirms that install on R12.2 environment is executed in Patch Edition
+     * File System
+     * 
+     * @throws InstContextException
+     */
+    private void validateR122FileEdition() throws InstContextException
+    {
+        if (!ic.getOac().getFileEditionType().equals(InstConstants.FILE_EDITION_TYPE_PATCH))
+        {
+            throw new InstContextException("You must be connected to the Patch Edition File System.");
+        }
     }
 }

@@ -12,7 +12,6 @@ public final class InstConstants
 {
     public static final String APPS_VERSION_11 = "11";
     public static final String APPS_VERSION_12 = "12";
-    public static final String APPS_VERSION_12_1 = "12.1";
     public static final String APPS_VERSION_12_2 = "12.2";
 
     public static final String APPS_11_ZIP_FILE = "excel4apps_wands_oracle_r11.zip";
@@ -23,6 +22,7 @@ public final class InstConstants
 
     public static final String APPS_11_SERVLET_FILE = "zone_ias1022.properties";
     public static final String APPS_12_SERVLET_FILE = "orion_web_xml_1013.tmp";
+    public static final String APPS_122_SERVLET_FILE = "oacore_web_xml_FMW.tmp";
 
     public static final String APPS_11_MDS = "xxe4a" + File.separator + "11.5.0" + File.separator + "mds";
     public static final String APPS_12_MDS = "xxe4a" + File.separator + "12.0.0" + File.separator + "mds";
@@ -40,9 +40,16 @@ public final class InstConstants
 
     public static final String LOG_FILE = "e4awand_gl_oracle_install";
 
-    public static final String KEY_INSTALLER_MODE = "INSTALLER_MODE";
-    public static final String KEY_DEBUG = "DB_AND_APPS_TIER";
+    public static final String INSTALLER_MODE_KEY = "INSTALLER_MODE";
+    public static final String DEBUG_KEY = "N";
 
-    public static final String MODE_DB_AND_APPS_TIER = "DB_AND_APPS_TIER";
-    public static final String MODE_APPS_TIER = "APPS_TIER";
+    public static final String INSTALLER_MODE_DB_AND_APPS_TIER = "DB_AND_APPS_TIER";
+    public static final String INSTALLER_MODE_APPS_TIER = "APPS_TIER";
+    public static final String INSTALLER_MODE_DEPLOY_ADSPLICE_FILES = "DEPLOY_ADSPLICE_FILES";
+
+    public static final String FILE_EDITION_TYPE_PATCH = "patch";
+
+    public static final String ADSPLICE_SOURCE_FOLDER = "." + File.separator + "adsplice";
+
+    public static final int XXE4A_APP_ID_DEFAULT = 50505;
 }

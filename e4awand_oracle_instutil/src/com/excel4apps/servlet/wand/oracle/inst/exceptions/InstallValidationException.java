@@ -1,25 +1,25 @@
 package com.excel4apps.servlet.wand.oracle.inst.exceptions;
 
 /**
- * Raised when an exception occurs during the loading of Wands OAF pages.
+ * Raised when an error occurs during Installation Validation
  * 
  * @author Andries Hanekom
  * 
  */
-public class LoadOAFPagesException extends Exception
+public class InstallValidationException extends Exception
 {
 
     String cause;
 
     /** Default constructor - initializes instance variable to unknown */
-    public LoadOAFPagesException()
+    public InstallValidationException()
     {
         super(); // call superclass constructor
         cause = "unknown";
     }
 
     /** Constructor receives some kind of message that is saved in an instance */
-    public LoadOAFPagesException(String err)
+    public InstallValidationException(String err)
     {
         super(err); // call super class constructor
         cause = err; // save message

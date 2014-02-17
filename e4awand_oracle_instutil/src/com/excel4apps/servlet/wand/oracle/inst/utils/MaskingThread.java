@@ -36,7 +36,7 @@ class MaskingThread extends Thread
                 try
                 {
                     Thread.currentThread();
-                    // attempt masking at this rate
+                    /* attempt masking at this rate */
                     Thread.sleep(1);
                 }
                 catch (InterruptedException iex)
@@ -48,7 +48,7 @@ class MaskingThread extends Thread
             }
         }
         finally
-        { // restore the original priority
+        { /* restore the original priority */
             Thread.currentThread().setPriority(priority);
         }
     }

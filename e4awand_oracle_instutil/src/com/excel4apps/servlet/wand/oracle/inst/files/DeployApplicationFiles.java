@@ -6,7 +6,6 @@ import java.util.logging.Level;
 
 import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
-import com.excel4apps.servlet.wand.oracle.inst.context.InstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.FileDeployException;
 import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
 
@@ -16,7 +15,7 @@ import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
  * @author Andries Hanekom
  * 
  */
-public class DeployFiles extends Installer
+public class DeployApplicationFiles extends Installer
 {
     private static boolean cleanUp(File directory)
     {
@@ -68,31 +67,36 @@ public class DeployFiles extends Installer
         return directory.delete();
     }
 
-    public static void deploy(InstContext ic) throws FileDeployException
+    /**
+     * Entry method for file deployment. Deployes application artifacts to
+     * JAVA_TOP and APPL_TOP.
+     * 
+     * @throws FileDeployException
+     */
+    public static void deploy() throws FileDeployException
     {
         try
         {
             File mayorReleaseZipFile;
             File extractToFolder;
 
-            // Unzip Release specific file
-            if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12))
+            /* UNZIP Release specific file */
+            if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_11))
             {
-                mayorReleaseZipFile = new File(InstConstants.APPS_12_ZIP_FILE);
-                extractToFolder = new File("." + File.separator + InstConstants.APPS_VERSION_12);
-
+                mayorReleaseZipFile = new File(InstConstants.APPS_11_ZIP_FILE);
+                extractToFolder = new File("." + File.separator + InstConstants.APPS_VERSION_11);
             }
             else
             {
-                mayorReleaseZipFile = new File(InstConstants.APPS_11_ZIP_FILE);
+                mayorReleaseZipFile = new File(InstConstants.APPS_12_ZIP_FILE);
                 extractToFolder = new File("." + File.separator + InstConstants.APPS_VERSION_12);
             }
 
             ArchiveManager.unzip(mayorReleaseZipFile, extractToFolder);
 
-            deployJavaTop(ic, extractToFolder);
+            deployJavaTop(extractToFolder);
 
-            deployApplTop(ic, extractToFolder);
+            deployApplTop(extractToFolder);
 
             if (cleanUp(extractToFolder))
             {
@@ -102,11 +106,17 @@ public class DeployFiles extends Installer
         catch (IOException ex)
         {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
-            throw new FileDeployException("Unable to deploy files");
+            throw new FileDeployException("Unable to deploy Application Files");
         }
     }
 
-    private static void deployApplTop(InstContext ic, File extractFromFolder) throws IOException
+    /**
+     * Deploy files to APPL_TOP
+     * 
+     * @param extractFromFolder
+     * @throws IOException
+     */
+    private static void deployApplTop(File extractFromFolder) throws IOException
     {
         File applTopZipFile;
         File applTopFolder;
@@ -118,7 +128,13 @@ public class DeployFiles extends Installer
         ArchiveManager.unzip(applTopZipFile, applTopFolder);
     }
 
-    private static void deployJavaTop(InstContext ic, File extractFromFolder) throws IOException
+    /**
+     * Deploy files to JAVA_TOP
+     * 
+     * @param extractFromFolder
+     * @throws IOException
+     */
+    private static void deployJavaTop(File extractFromFolder) throws IOException
     {
         File javaTopZipFile;
         File javaTopFolder;

@@ -1,17 +1,12 @@
 package com.excel4apps.servlet.wand.oracle.inst.servlet;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.logging.Level;
 
-import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
-import com.excel4apps.servlet.wand.oracle.inst.context.InstContext;
 import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException;
+import com.excel4apps.servlet.wand.oracle.inst.utils.ArchiveManager;
 
 /**
  * Performs manipulation of Servlet Template File.
@@ -19,24 +14,48 @@ import com.excel4apps.servlet.wand.oracle.inst.exceptions.ServletConfigException
  * @author Andries Hanekom
  * 
  */
-public class ServletConfig extends Installer
+abstract class ServletConfig extends Installer
 {
-    public static void copyFiles(String source, String destination) throws IOException
+    protected File templateFile;
+    protected File customFile;
+
+    public void configure(String servletFile) throws ServletConfigException
     {
-        logger.finer("Copy file " + source + " to " + destination);
-        InputStream in = new FileInputStream(source);
-        OutputStream out = new FileOutputStream(destination);
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0)
+        String fndTop = ic.getOac().getFndTop();
+        String templateTop;
+
+        templateTop = fndTop + File.separator + "admin" + File.separator + "template";
+
+        String templateFileString = templateTop + File.separator + servletFile;
+        String customFileString = templateTop + File.separator + "custom" + File.separator + servletFile;
+
+        customFile = new File(customFileString);
+        templateFile = new File(templateFileString);
+
+        if (customFile.exists())
         {
-            out.write(buf, 0, len);
+            modifyCustomFile(customFile);
         }
-        in.close();
-        out.close();
+        else
+        {
+            createCustomFile(customFile, templateFile);
+
+            if (customFile.exists())
+            {
+                modifyCustomFile(customFile);
+            }
+        }
     }
 
-    public static boolean createCustomFile(File customFile, File templateFile) throws ServletConfigException
+    /**
+     * Creates custom file from template
+     * 
+     * @param customFile
+     * @param templateFile
+     * @return If no exception is raised return true boolean value to indicate success
+     * @throws ServletConfigException
+     */
+    protected boolean createCustomFile(File customFile, File templateFile) throws ServletConfigException
     {
         logger.finer("Custom File: " + customFile.getPath());
         logger.finer("Template File: " + templateFile.getPath());
@@ -55,7 +74,7 @@ public class ServletConfig extends Installer
 
             try
             {
-                copyFiles(templateFile.getAbsolutePath(), customFile.getAbsolutePath());
+                ArchiveManager.copyFiles(templateFile.getAbsolutePath(), customFile.getAbsolutePath());
             }
             catch (IOException e)
             {
@@ -70,31 +89,15 @@ public class ServletConfig extends Installer
         return true;
     }
 
-    public static boolean customFilExists(File customFile)
+    protected boolean customFilExists(File customFile)
     {
         return (customFile.exists());
     }
 
-    public static boolean customFolderExists(File customFolder)
+    protected boolean customFolderExists(File customFolder)
     {
         return (customFolder.exists());
     }
 
-    /**
-     * Perform servlet config based on Application Version
-     * 
-     * @param ic
-     * @throws ServletConfigException
-     */
-    public static void setup(InstContext ic) throws ServletConfigException
-    {
-        if (ic.appsMayorVersion.equals(InstConstants.APPS_VERSION_11))
-        {
-            ServletConfigR11.configure(ic);
-        }
-        else
-        {
-            ServletConfigR12.configure(ic);
-        }
-    }
+    protected abstract void modifyCustomFile(File customFile) throws ServletConfigException;
 }
