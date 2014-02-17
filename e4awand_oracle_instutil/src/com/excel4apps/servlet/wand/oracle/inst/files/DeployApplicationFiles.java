@@ -80,15 +80,15 @@ public class DeployApplicationFiles extends Installer
             File mayorReleaseZipFile;
             File extractToFolder;
 
-            // Unzip Release specific file
-            if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12))
+            /* UNZIP Release specific file */
+            if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_11))
             {
-                mayorReleaseZipFile = new File(InstConstants.APPS_12_ZIP_FILE);
-                extractToFolder = new File("." + File.separator + InstConstants.APPS_VERSION_12);
+                mayorReleaseZipFile = new File(InstConstants.APPS_11_ZIP_FILE);
+                extractToFolder = new File("." + File.separator + InstConstants.APPS_VERSION_11);
             }
             else
             {
-                mayorReleaseZipFile = new File(InstConstants.APPS_11_ZIP_FILE);
+                mayorReleaseZipFile = new File(InstConstants.APPS_12_ZIP_FILE);
                 extractToFolder = new File("." + File.separator + InstConstants.APPS_VERSION_12);
             }
 

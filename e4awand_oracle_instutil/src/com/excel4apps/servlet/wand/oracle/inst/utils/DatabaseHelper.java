@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.excel4apps.servlet.wand.oracle.inst.InstConstants;
 import com.excel4apps.servlet.wand.oracle.inst.Installer;
 
 /**
@@ -17,6 +18,7 @@ import com.excel4apps.servlet.wand.oracle.inst.Installer;
 public class DatabaseHelper extends Installer
 {
 
+    private static final String JDBC_ORACLE_THIN = "jdbc:oracle:thin:@";
     private Connection conn = null;
     private Statement stmt = null;
     private ResultSet rset = null;
@@ -65,12 +67,28 @@ public class DatabaseHelper extends Installer
 
     public ResultSet executeQuery(String sql) throws SQLException
     {
-
         DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 
-        conn = DriverManager.getConnection("jdbc:oracle:thin:@" + ic.getOac().getDBHost() + ":"
-                + ic.getOac().getDBPort() + ":" + ic.getOac().getDBSid(), ic.getAppsusername(),
-                String.valueOf(ic.getAppspassword()));
+        String connection = JDBC_ORACLE_THIN;
+
+        /*
+         * Connect to Patch Edition database using service:
+         * jdbc:oracle:thin:@//HOSTNAME:PORT/SERVICENAME
+         */
+        if (ic.getAppsMayorVersion().equals(InstConstants.APPS_VERSION_12_2))
+        {
+            connection = connection + "//" + ic.getOac().getDBHost() + ":" + ic.getOac().getDBPort() + "/"
+                    + "ebs_patch";
+        }
+        else
+        {
+            connection = connection + ic.getOac().getDBHost() + ":" + ic.getOac().getDBPort() + ":"
+                    + ic.getOac().getDBSid();
+        }
+
+        logger.finer("connection string=" + connection);
+
+        conn = DriverManager.getConnection(connection, ic.getAppsusername(), String.valueOf(ic.getAppspassword()));
 
         logger.finer("Connected.");
 
