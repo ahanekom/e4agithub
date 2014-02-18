@@ -29,7 +29,7 @@ public class InstallValidation extends Installer
 
             if (!databaseHelper.isXXE4AAppConfigured())
             {
-                throw new InstallValidationException("Unable to connect to database");
+                throw new InstallValidationException("Application XXE4A Not Registered");
             }
 
         }

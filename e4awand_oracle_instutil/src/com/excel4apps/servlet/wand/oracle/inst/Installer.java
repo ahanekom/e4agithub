@@ -371,7 +371,7 @@ public class Installer
         }
         catch (Exception ex)
         {
-            logC(ex.getMessage() + "\n");
+            logC("ERROR: " + ex.getMessage() + "\n");
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             return 1;
         }
